@@ -1,0 +1,6 @@
+.expense {
+  display: flex;
+  margin-top: 80px;
+  padding: 1rem;
+  justify-content: space-between;
+}

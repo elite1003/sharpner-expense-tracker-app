@@ -1,38 +1,34 @@
-import React, { useContext } from "react";
-import AuthForm from "./components/Auth/AuthForm";
-import Login from "./components/Auth/Login";
-import Expense from "../src/components/Expense/Expense";
+import React from "react";
 import { Redirect, Route, Switch } from "react-router-dom/cjs/react-router-dom";
-import AuthContext from "./store/auth-context";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import ProfilePage from "./pages/ProfilePage";
+import Header from "./components/Layout/Header";
 const App = () => {
-  const authCtx = useContext(AuthContext);
   return (
-    <main>
-      <Switch>
-        <Route path="/" exact>
-          <Expense />
-        </Route>
-
-        <Route path="/auth">
-          <AuthForm />
-          <Login />
-        </Route>
-
-        {/* {authCtx.isLoggedIn && (
-          <>
-            <Route path="/store">
-              <Product />
-            </Route>
-            <Route path="/profile">
-              <UserProfile />
-            </Route>
-          </>
-        )} */}
-        <Route path="*">
-          <Redirect to="/auth" />
-        </Route>
-      </Switch>
-    </main>
+    <>
+      <Header />
+      <main>
+        <Switch>
+          <Route path="/" exact>
+            <HomePage />
+          </Route>
+          <Route path="/signup">
+            <SignupPage />
+          </Route>
+          <Route path="/login">
+            <LoginPage />
+          </Route>
+          <Route path="/profile">
+            <ProfilePage />
+          </Route>
+          <Route path="*">
+            <Redirect to="/login" />
+          </Route>
+        </Switch>
+      </main>
+    </>
   );
 };
 

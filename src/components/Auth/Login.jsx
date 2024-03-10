@@ -2,6 +2,7 @@ import React, { useRef, useContext } from "react";
 import classes from "./Login.module.css";
 import AuthContext from "../../store/auth-context";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
+
 const Login = (props) => {
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
@@ -33,7 +34,7 @@ const Login = (props) => {
         }
         const data = await response.json();
         authCtx.login(data.idToken);
-        history.replace("/");
+        history.replace("/profile");
       } catch (error) {
         alert(error.message);
       }
