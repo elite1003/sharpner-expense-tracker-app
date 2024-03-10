@@ -1,27 +1,21 @@
-import React, { useContext, useRef } from "react";
-import classes from "./AuthForm.module.css";
+import React, { useRef, useContext } from "react";
+import classes from "./Login.module.css";
 import AuthContext from "../../store/auth-context";
-
-const AuthForm = (props) => {
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
+const Login = (props) => {
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
-  const confirmPasswordInputRef = useRef(null);
   const authCtx = useContext(AuthContext);
+  const history = useHistory();
 
   const submitHandler = async (e) => {
     e.preventDefault();
     const email = emailInputRef.current.value;
     const password = passwordInputRef.current.value;
-    const confirmPassword = confirmPasswordInputRef.value;
-    if (
-      email.length > 0 &&
-      password.length > 0 &&
-      confirmPassword.length > 0 &&
-      password === confirmPassword
-    ) {
+    if (email.length > 0 && password.length > 0) {
       try {
         const response = await fetch(
-          "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBK8Hfm1ccNpEEMJ0Zi6Og3o-jwrbwt-JM",
+          "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBK8Hfm1ccNpEEMJ0Zi6Og3o-jwrbwt-JM",
           {
             method: "POST",
             body: JSON.stringify({
@@ -35,10 +29,11 @@ const AuthForm = (props) => {
           }
         );
         if (!response.ok) {
-          throw new Error("Signup failed");
+          throw new Error("Login failed");
         }
         const data = await response.json();
         authCtx.login(data.idToken);
+        history.replace("/");
       } catch (error) {
         alert(error.message);
       }
@@ -47,41 +42,32 @@ const AuthForm = (props) => {
 
   return (
     <section className={classes.auth}>
-      <h1>SignUp</h1>
+      <h1>Login</h1>
       <form onSubmit={submitHandler}>
         <div className={classes.control}>
-          <label htmlFor="authEmail">Email</label>
-          <input type="email" id="authEmail" required ref={emailInputRef} />
+          <label htmlFor="loginEmail">Email</label>
+          <input type="email" id="loginEmail" required ref={emailInputRef} />
         </div>
         <div className={classes.control}>
-          <label htmlFor="authPassword">Password</label>
+          <label htmlFor="loginPassword">Password</label>
           <input
             type="password"
-            id="authPassword"
+            id="loginPassword"
             required
             minLength="7"
             ref={passwordInputRef}
           />
         </div>
-        <div className={classes.control}>
-          <label htmlFor="confirmPassword">Confirm Password</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            required
-            minLength="7"
-            ref={confirmPasswordInputRef}
-          />
-        </div>
         <div className={classes.actions}>
-          <button>Sign Up</button>
+          <button>Login</button>
         </div>
+        <p>Reset password</p>
       </form>
       <div className={classes.actions}>
-        <button type="button">Login with existing account</button>
+        <button type="button">Create New Account</button>
       </div>
     </section>
   );
 };
 
-export default AuthForm;
+export default Login;
