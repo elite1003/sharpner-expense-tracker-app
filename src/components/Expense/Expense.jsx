@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import classes from "./Expense.module.css";
 import ExpenseItem from "./ExpenseItem";
 
@@ -8,15 +8,61 @@ const Expense = (props) => {
   const categoryInputRef = useRef(null);
   const [expenses, setExpenses] = useState([]);
 
+  const fetchExpenses = useCallback(async () => {
+    try {
+      const response = await fetch(
+        "https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/expenses.json"
+      );
+      if (!response.ok) {
+        throw new Error("failed to fetch expenses");
+      }
+      const data = await response.json();
+      let expenses = [];
+      for (const key in data) {
+        if (Object.hasOwnProperty.call(data, key)) {
+          expenses.push({ id: key, ...data[key] });
+        }
+      }
+      setExpenses(expenses);
+    } catch (error) {
+      alert(error.message);
+    }
+  }, [setExpenses]);
+  useEffect(() => {
+    fetchExpenses();
+  }, [fetchExpenses]);
+
+  const saveExpenses = useCallback(
+    async (expense) => {
+      try {
+        const response = await fetch(
+          "https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/expenses.json",
+          {
+            method: "POST",
+            body: JSON.stringify(expense),
+            headers: {
+              "Content-type": "application/json",
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("failed to save expenses");
+        }
+        const data = await response.json();
+        setExpenses((prev) => [...prev, { id: data.name, ...expense }]);
+      } catch (error) {
+        alert(error.message);
+      }
+    },
+    [setExpenses]
+  );
   const submitHandler = (e) => {
     e.preventDefault();
     const moneySpent = moneySpentInputRef.current.value;
     const description = descriptionInputRef.current.value;
     const category = categoryInputRef.current.value;
-    setExpenses((prevState) => [
-      { moneySpent, description, category },
-      ...prevState,
-    ]);
+    const expense = { moneySpent, description, category };
+    saveExpenses(expense);
   };
   return (
     <>
@@ -28,6 +74,7 @@ const Expense = (props) => {
               type="Number"
               id="moneySpent"
               required
+              min={1}
               ref={moneySpentInputRef}
             />
           </div>
@@ -60,7 +107,7 @@ const Expense = (props) => {
             <h2 className={classes.expenseslistFallback}>Found no expenses.</h2>
           )}
           {expenses.map((expense) => {
-            return <ExpenseItem expense={expense} />;
+            return <ExpenseItem key={expense.id} expense={expense} />;
           })}
         </ul>
       </section>
