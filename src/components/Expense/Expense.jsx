@@ -7,6 +7,7 @@ const Expense = (props) => {
   const descriptionInputRef = useRef(null);
   const categoryInputRef = useRef(null);
   const [expenses, setExpenses] = useState([]);
+  const [idEditSelected, setIdEditSeleceted] = useState(null);
 
   const fetchExpenses = useCallback(async () => {
     try {
@@ -32,37 +33,91 @@ const Expense = (props) => {
     fetchExpenses();
   }, [fetchExpenses]);
 
-  const saveExpenses = useCallback(
-    async (expense) => {
-      try {
-        const response = await fetch(
-          "https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/expenses.json",
-          {
-            method: "POST",
-            body: JSON.stringify(expense),
-            headers: {
-              "Content-type": "application/json",
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error("failed to save expenses");
+  const saveExpense = async (expense) => {
+    try {
+      const response = await fetch(
+        "https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/expenses.json",
+        {
+          method: "POST",
+          body: JSON.stringify(expense),
+          headers: {
+            "Content-type": "application/json",
+          },
         }
-        const data = await response.json();
-        setExpenses((prev) => [...prev, { id: data.name, ...expense }]);
-      } catch (error) {
-        alert(error.message);
+      );
+      if (!response.ok) {
+        throw new Error("failed to save expenses");
       }
-    },
-    [setExpenses]
-  );
+      const data = await response.json();
+      setExpenses((prev) => [...prev, { id: data.name, ...expense }]);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const expenseDeleteHandler = async (id) => {
+    try {
+      const response = await fetch(
+        `https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/expenses/${id}.json`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) {
+        throw new Error("failed to delete expenses");
+      }
+      console.log("Expense successfuly deleted");
+      let updatedExpenses = [];
+      updatedExpenses = expenses.filter((expense) => expense.id !== id);
+      setExpenses(updatedExpenses);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+  const updateExpense = async (expense) => {
+    try {
+      const response = await fetch(
+        `https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/expenses/${idEditSelected}.json`,
+        {
+          method: "PUT",
+          body: JSON.stringify(expense),
+          headers: {
+            "Content-type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("failed to update expenses");
+      }
+      const data = await response.json();
+      const existingItemIndex = expenses.findIndex(
+        (expense) => expense.id === idEditSelected
+      );
+      const updatedItem = { ...data, id: idEditSelected };
+      const updatedItems = [...expenses];
+      updatedItems[existingItemIndex] = updatedItem;
+      setExpenses(updatedItems);
+      setIdEditSeleceted(null);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+  const expenseEditHandler = (expense) => {
+    setIdEditSeleceted(expense.id);
+    moneySpentInputRef.current.value = expense.moneySpent;
+    descriptionInputRef.current.value = expense.description;
+    categoryInputRef.current.value = expense.category;
+  };
   const submitHandler = (e) => {
     e.preventDefault();
     const moneySpent = moneySpentInputRef.current.value;
     const description = descriptionInputRef.current.value;
     const category = categoryInputRef.current.value;
     const expense = { moneySpent, description, category };
-    saveExpenses(expense);
+    if (!idEditSelected) saveExpense(expense);
+    else {
+      updateExpense(expense);
+    }
   };
   return (
     <>
@@ -107,7 +162,14 @@ const Expense = (props) => {
             <h2 className={classes.expenseslistFallback}>Found no expenses.</h2>
           )}
           {expenses.map((expense) => {
-            return <ExpenseItem key={expense.id} expense={expense} />;
+            return (
+              <ExpenseItem
+                key={expense.id}
+                expense={expense}
+                onDelete={expenseDeleteHandler}
+                onEdit={expenseEditHandler}
+              />
+            );
           })}
         </ul>
       </section>

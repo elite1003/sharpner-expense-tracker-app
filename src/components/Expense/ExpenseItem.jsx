@@ -8,6 +8,12 @@ const ExpenseItem = (props) => {
         <div>{expense.moneySpent}</div>
         <div>{expense.description}</div>
         <div>{expense.category}</div>
+        <button type="button" onClick={() => props.onDelete(expense.id)}>
+          Delete
+        </button>
+        <button type="button" onClick={() => props.onEdit(expense)}>
+          Edit
+        </button>
       </div>
     </li>
   );

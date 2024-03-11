@@ -28,11 +28,9 @@ const App = () => {
             </Route>
           )}
           <UserContextProvider>
-            {!authCtx.isLoggedIn && (
-              <Route path="/login">
-                <LoginPage />
-              </Route>
-            )}
+            <Route path="/login">
+              <LoginPage />
+            </Route>
             {authCtx.isLoggedIn && (
               <>
                 <Route path="/profile">

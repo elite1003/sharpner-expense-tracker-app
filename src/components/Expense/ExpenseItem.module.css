@@ -10,3 +10,10 @@
   border-radius: 12px;
   background-color: #f2c94f;
 }
+
+.expense-item button {
+  font-weight: bold;
+  padding: 0.2rem;
+  border-radius: 8px;
+  background-color: antiquewhite;
+}
