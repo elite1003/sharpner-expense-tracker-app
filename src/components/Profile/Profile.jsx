@@ -63,8 +63,8 @@ const Profile = () => {
       if (!response.ok) {
         throw new Error("failed to verify email");
       }
-      const data = await response.json();
-      userCtx.saveUser({ ...userCtx.user, emailVerified: !!data.email });
+      //   const data = await response.json();
+      //   userCtx.saveUser({ ...userCtx.user, emailVerified: !!data.email });
     } catch (error) {
       alert(error.message);
     }

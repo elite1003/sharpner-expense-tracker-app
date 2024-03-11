@@ -8,7 +8,7 @@ const Header = (props) => {
   const history = useHistory();
   const logoutHandler = () => {
     authCtx.logout();
-    history.replace("/");
+    history.replace("/login");
   };
   return (
     <Fragment>
