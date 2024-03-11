@@ -37,14 +37,38 @@ const Profile = () => {
           fullName: data.displayName,
           profilePhotoUrl: data.photoUrl,
           email: data.email,
+          emailVerified: userCtx.user.emailVerified,
         });
-        authCtx.login(data.idToken);
       } catch (e) {
         alert(e.message);
       }
     }
   };
 
+  const verifyEmailHandler = async () => {
+    try {
+      const response = await fetch(
+        "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBK8Hfm1ccNpEEMJ0Zi6Og3o-jwrbwt-JM",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            requestType: "VERIFY_EMAIL",
+            idToken: authCtx.token,
+          }),
+          headers: {
+            "Content-type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("failed to verify email");
+      }
+      const data = await response.json();
+      userCtx.saveUser({ ...userCtx.user, emailVerified: !!data.email });
+    } catch (error) {
+      alert(error.message);
+    }
+  };
   return (
     <section className={classes.profile}>
       <header>
@@ -80,6 +104,9 @@ const Profile = () => {
         <p>{userCtx.user.fullName}</p>
         <p>{userCtx.user.profilePhotoUrl}</p>
         <p>{userCtx.user.email}</p>
+        {!userCtx.user.emailVerified && (
+          <button onClick={verifyEmailHandler}>Verify Email</button>
+        )}
       </div>
     </section>
   );
