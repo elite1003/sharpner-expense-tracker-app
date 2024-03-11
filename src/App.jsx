@@ -8,6 +8,7 @@ import Header from "./components/Layout/Header";
 import { UserContextProvider } from "./store/user-context";
 import AuthContext from "./store/auth-context";
 import ForgetPasswordPage from "./pages/ForgetPasswordPage";
+import Expense from "./components/Expense/Expense";
 const App = () => {
   const authCtx = useContext(AuthContext);
   return (
@@ -36,6 +37,9 @@ const App = () => {
               <>
                 <Route path="/profile">
                   <ProfilePage />
+                </Route>
+                <Route path="/expense">
+                  <Expense />
                 </Route>
               </>
             )}

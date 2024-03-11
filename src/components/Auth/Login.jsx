@@ -99,7 +99,14 @@ const Login = (props) => {
         </NavLink>
       </div>
       <div className={classes.actions}>
-        <button type="button">Create New Account</button>
+        <button
+          type="button"
+          onClick={() => {
+            history.replace("/signup");
+          }}
+        >
+          Create New Account
+        </button>
       </div>
     </section>
   );

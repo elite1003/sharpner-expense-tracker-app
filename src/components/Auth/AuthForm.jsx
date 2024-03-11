@@ -1,12 +1,14 @@
 import React, { useContext, useRef } from "react";
 import classes from "./AuthForm.module.css";
 import AuthContext from "../../store/auth-context";
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
 
 const AuthForm = (props) => {
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
   const confirmPasswordInputRef = useRef(null);
   const authCtx = useContext(AuthContext);
+  const history = useHistory();
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -78,7 +80,9 @@ const AuthForm = (props) => {
         </div>
       </form>
       <div className={classes.actions}>
-        <button type="button">Login with existing account</button>
+        <button type="button" onClick={() => history.replace("/login")}>
+          Login with existing account
+        </button>
       </div>
     </section>
   );

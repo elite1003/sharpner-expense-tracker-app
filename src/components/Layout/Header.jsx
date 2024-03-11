@@ -31,6 +31,9 @@ const Header = (props) => {
             <NavLink to="/profile" activeClassName={classes.active}>
               profile
             </NavLink>
+            <NavLink to="/expense" activeClassName={classes.active}>
+              expense
+            </NavLink>
             <button onClick={logoutHandler}>LogOut</button>
           </>
         )}
