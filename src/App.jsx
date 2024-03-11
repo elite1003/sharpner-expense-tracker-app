@@ -7,6 +7,7 @@ import ProfilePage from "./pages/ProfilePage";
 import Header from "./components/Layout/Header";
 import { UserContextProvider } from "./store/user-context";
 import AuthContext from "./store/auth-context";
+import ForgetPasswordPage from "./pages/ForgetPasswordPage";
 const App = () => {
   const authCtx = useContext(AuthContext);
   return (
@@ -16,6 +17,9 @@ const App = () => {
         <Switch>
           <Route path="/" exact>
             <HomePage />
+          </Route>
+          <Route path="/forgetPassword">
+            <ForgetPasswordPage />
           </Route>
           {!authCtx.isLoggedIn && (
             <Route path="/signup">
@@ -29,9 +33,11 @@ const App = () => {
               </Route>
             )}
             {authCtx.isLoggedIn && (
-              <Route path="/profile">
-                <ProfilePage />
-              </Route>
+              <>
+                <Route path="/profile">
+                  <ProfilePage />
+                </Route>
+              </>
             )}
           </UserContextProvider>
           <Route path="*">

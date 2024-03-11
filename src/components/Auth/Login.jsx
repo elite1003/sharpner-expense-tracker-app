@@ -1,7 +1,7 @@
 import React, { useRef, useContext } from "react";
 import classes from "./Login.module.css";
 import AuthContext from "../../store/auth-context";
-import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { useHistory, NavLink } from "react-router-dom/cjs/react-router-dom";
 import UserContext from "../../store/user-context";
 
 const Login = (props) => {
@@ -92,8 +92,12 @@ const Login = (props) => {
         <div className={classes.actions}>
           <button>Login</button>
         </div>
-        <p>Reset password</p>
       </form>
+      <div className={classes.actions}>
+        <NavLink to="/forgetPassword" activeClassName={classes.active}>
+          Forget Password
+        </NavLink>
+      </div>
       <div className={classes.actions}>
         <button type="button">Create New Account</button>
       </div>
