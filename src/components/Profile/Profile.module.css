@@ -18,7 +18,12 @@
 .profile button {
   color: white;
   font-size: 1rem;
-  background-color: rgb(161, 15, 64);
+  background-color: rgb(112, 15, 161);
   padding: 0.5rem;
   border-radius: 8px;
+}
+.user {
+  display: flex;
+  justify-content: space-around;
+  align-items: baseline;
 }

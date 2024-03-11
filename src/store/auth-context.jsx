@@ -12,9 +12,9 @@ export const AuthContextProvider = (props) => {
   const [token, setToken] = useState(initialToken);
   const userLoggedIn = !!token;
 
-  setTimeout(() => {
-    logoutHandler();
-  }, 5 * 60 * 1000);
+  // setTimeout(() => {
+  //   logoutHandler();
+  // }, 5 * 60 * 1000);
 
   const loginHandler = (token) => {
     setToken(token);

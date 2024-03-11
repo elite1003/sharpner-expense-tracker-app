@@ -1,9 +1,15 @@
 import React, { Fragment, useContext } from "react";
-import { NavLink } from "react-router-dom/cjs/react-router-dom";
+import { NavLink, useHistory } from "react-router-dom/cjs/react-router-dom";
 import classes from "./Header.module.css";
 import AuthContext from "../../store/auth-context";
+
 const Header = (props) => {
   const authCtx = useContext(AuthContext);
+  const history = useHistory();
+  const logoutHandler = () => {
+    authCtx.logout();
+    history.replace("/");
+  };
   return (
     <Fragment>
       <header className={classes.header}>
@@ -21,9 +27,12 @@ const Header = (props) => {
           </>
         )}
         {authCtx.isLoggedIn && (
-          <NavLink to="/profile" activeClassName={classes.active}>
-            profile
-          </NavLink>
+          <>
+            <NavLink to="/profile" activeClassName={classes.active}>
+              profile
+            </NavLink>
+            <button onClick={logoutHandler}>LogOut</button>
+          </>
         )}
       </header>
     </Fragment>
