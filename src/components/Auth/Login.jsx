@@ -1,15 +1,14 @@
-import React, { useRef, useContext } from "react";
+import React, { useRef } from "react";
 import classes from "./Login.module.css";
-import AuthContext from "../../store/auth-context";
 import { useHistory, NavLink } from "react-router-dom/cjs/react-router-dom";
-import UserContext from "../../store/user-context";
+import { authActions } from "../../store/auth";
+import { useDispatch } from "react-redux";
 
 const Login = (props) => {
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
-  const authCtx = useContext(AuthContext);
-  const userCtx = useContext(UserContext);
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const verifyUser = async (email, password) => {
     const response = await fetch(
@@ -30,34 +29,10 @@ const Login = (props) => {
       throw new Error("Login failed");
     }
     const data = await response.json();
-    getUserDetail(data.idToken);
-    authCtx.login(data.idToken);
-  };
-  const getUserDetail = async (idToken) => {
-    const response = await fetch(
-      "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyBK8Hfm1ccNpEEMJ0Zi6Og3o-jwrbwt-JM",
-      {
-        method: "POST",
-        body: JSON.stringify({ idToken: idToken }),
-        headers: {
-          "Content-type": "application/json",
-        },
-      }
-    );
-    if (!response.ok) {
-      throw new Error("user fetch failed");
-    }
-    const data = await response.json();
-    const user = data.users[0];
-    userCtx.saveUser({
-      id: user.localId,
-      fullName: user.displayName,
-      profilePhotoUrl: user.photoUrl,
-      email: user.email,
-      emailVerified: user.emailVerified,
-    });
+    dispatch(authActions.login(data.idToken));
     history.replace("/profile");
   };
+
   const submitHandler = async (e) => {
     e.preventDefault();
     const email = emailInputRef.current.value;

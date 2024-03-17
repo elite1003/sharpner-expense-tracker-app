@@ -1,14 +1,15 @@
-import React, { useContext, useRef } from "react";
+import React, { useRef } from "react";
 import classes from "./AuthForm.module.css";
-import AuthContext from "../../store/auth-context";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { authActions } from "../../store/auth";
+import { useDispatch } from "react-redux";
 
 const AuthForm = (props) => {
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
   const confirmPasswordInputRef = useRef(null);
-  const authCtx = useContext(AuthContext);
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -40,7 +41,7 @@ const AuthForm = (props) => {
           throw new Error("Signup failed");
         }
         const data = await response.json();
-        authCtx.login(data.idToken);
+        dispatch(authActions.login(data.idToken));
       } catch (error) {
         alert(error.message);
       }

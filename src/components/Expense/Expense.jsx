@@ -1,13 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import classes from "./Expense.module.css";
 import ExpenseItem from "./ExpenseItem";
+import { useSelector } from "react-redux";
+import { expensesActions } from "../../store/expenses";
+import { useDispatch } from "react-redux";
 
 const Expense = (props) => {
   const moneySpentInputRef = useRef(null);
   const descriptionInputRef = useRef(null);
   const categoryInputRef = useRef(null);
-  const [expenses, setExpenses] = useState([]);
+  const expenses = useSelector((state) => state.expenses);
   const [idEditSelected, setIdEditSeleceted] = useState(null);
+  const dispatch = useDispatch();
 
   const fetchExpenses = useCallback(async () => {
     try {
@@ -24,11 +28,12 @@ const Expense = (props) => {
           expenses.push({ id: key, ...data[key] });
         }
       }
-      setExpenses(expenses);
+      dispatch(expensesActions.updateExpenses(expenses));
     } catch (error) {
       alert(error.message);
     }
-  }, [setExpenses]);
+  }, []);
+
   useEffect(() => {
     fetchExpenses();
   }, [fetchExpenses]);
@@ -49,7 +54,7 @@ const Expense = (props) => {
         throw new Error("failed to save expenses");
       }
       const data = await response.json();
-      setExpenses((prev) => [...prev, { id: data.name, ...expense }]);
+      dispatch(expensesActions.saveExpense({ id: data.name, ...expense }));
     } catch (error) {
       alert(error.message);
     }
@@ -66,10 +71,9 @@ const Expense = (props) => {
       if (!response.ok) {
         throw new Error("failed to delete expenses");
       }
-      console.log("Expense successfuly deleted");
       let updatedExpenses = [];
       updatedExpenses = expenses.filter((expense) => expense.id !== id);
-      setExpenses(updatedExpenses);
+      dispatch(expensesActions.updateExpenses(updatedExpenses));
     } catch (error) {
       alert(error.message);
     }
@@ -94,9 +98,9 @@ const Expense = (props) => {
         (expense) => expense.id === idEditSelected
       );
       const updatedItem = { ...data, id: idEditSelected };
-      const updatedItems = [...expenses];
-      updatedItems[existingItemIndex] = updatedItem;
-      setExpenses(updatedItems);
+      dispatch(
+        expensesActions.updateExpense({ updatedItem, existingItemIndex })
+      );
       setIdEditSeleceted(null);
     } catch (error) {
       alert(error.message);

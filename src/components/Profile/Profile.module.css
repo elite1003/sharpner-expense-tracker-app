@@ -11,7 +11,6 @@
 }
 .profile form {
   display: flex;
-
   justify-content: space-around;
   align-items: baseline;
 }
@@ -21,6 +20,7 @@
   background-color: rgb(112, 15, 161);
   padding: 0.5rem;
   border-radius: 8px;
+  cursor: pointer;
 }
 .user {
   display: flex;

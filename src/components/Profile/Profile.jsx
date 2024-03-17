@@ -1,13 +1,46 @@
-import { useContext, useRef } from "react";
+import { useRef, useEffect } from "react";
 import classes from "./Profile.module.css";
-import UserContext from "../../store/user-context";
-import AuthContext from "../../store/auth-context";
+import { useSelector } from "react-redux";
+import { userActions } from "../../store/user";
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { useDispatch } from "react-redux";
 
 const Profile = () => {
   const nameInputRef = useRef(null);
   const photoUrlInputRef = useRef(null);
-  const userCtx = useContext(UserContext);
-  const authCtx = useContext(AuthContext);
+  const history = useHistory();
+  const token = useSelector((state) => state.auth.token);
+  const userState = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    fetch(
+      "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyBK8Hfm1ccNpEEMJ0Zi6Og3o-jwrbwt-JM",
+      {
+        method: "POST",
+        body: JSON.stringify({ idToken: token }),
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => data.users[0])
+      .then((user) =>
+        dispatch(
+          userActions.saveUser({
+            id: user.localId,
+            fullName: user.displayName,
+            profilePhotoUrl: user.photoUrl,
+            email: user.email,
+            emailVerified: user.emailVerified,
+          })
+        )
+      )
+      .catch((e) => {
+        history.replace("/login");
+      });
+  }, [dispatch, token, history]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -20,7 +53,7 @@ const Profile = () => {
           {
             method: "POST",
             body: JSON.stringify({
-              idToken: authCtx.token,
+              idToken: token,
               displayName: enteredName,
               photoUrl: enteredPhotoUrl,
               returnSecureToken: true,
@@ -32,13 +65,15 @@ const Profile = () => {
           throw new Error("user details save failed");
         }
         const data = await response.json();
-        userCtx.saveUser({
-          id: data.localId,
-          fullName: data.displayName,
-          profilePhotoUrl: data.photoUrl,
-          email: data.email,
-          emailVerified: userCtx.user.emailVerified,
-        });
+        dispatch(
+          userActions.saveUser({
+            id: data.localId,
+            fullName: data.displayName,
+            profilePhotoUrl: data.photoUrl,
+            email: data.email,
+            emailVerified: userState.emailVerified,
+          })
+        );
       } catch (e) {
         alert(e.message);
       }
@@ -53,7 +88,7 @@ const Profile = () => {
           method: "POST",
           body: JSON.stringify({
             requestType: "VERIFY_EMAIL",
-            idToken: authCtx.token,
+            idToken: token,
           }),
           headers: {
             "Content-type": "application/json",
@@ -63,8 +98,10 @@ const Profile = () => {
       if (!response.ok) {
         throw new Error("failed to verify email");
       }
-      //   const data = await response.json();
-      //   userCtx.saveUser({ ...userCtx.user, emailVerified: !!data.email });
+      const data = await response.json();
+      dispatch(
+        userActions.saveUser({ ...userState, emailVerified: !!data.email })
+      );
     } catch (error) {
       alert(error.message);
     }
@@ -84,7 +121,7 @@ const Profile = () => {
             name="fullname"
             id="fullname"
             ref={nameInputRef}
-            defaultValue={userCtx.user.fullName}
+            defaultValue={userState.fullName}
           />
         </div>
         <div>
@@ -94,17 +131,17 @@ const Profile = () => {
             name="profilePhotoUrl"
             id="profilePhotoUrl"
             ref={photoUrlInputRef}
-            defaultValue={userCtx.user.profilePhotoUrl}
+            defaultValue={userState.profilePhotoUrl}
           />
         </div>
         <button>Update</button>
       </form>
       <div className={classes.user}>
         <h1>User detail</h1>
-        <p>{userCtx.user.fullName}</p>
-        <p>{userCtx.user.profilePhotoUrl}</p>
-        <p>{userCtx.user.email}</p>
-        {!userCtx.user.emailVerified && (
+        <p>{userState.fullName}</p>
+        <p>{userState.profilePhotoUrl}</p>
+        <p>{userState.email}</p>
+        {!userState.emailVerified && (
           <button onClick={verifyEmailHandler}>Verify Email</button>
         )}
       </div>

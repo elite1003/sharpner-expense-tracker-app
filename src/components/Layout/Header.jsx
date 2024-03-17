@@ -1,13 +1,17 @@
-import React, { Fragment, useContext } from "react";
+import React, { Fragment } from "react";
 import { NavLink, useHistory } from "react-router-dom/cjs/react-router-dom";
 import classes from "./Header.module.css";
-import AuthContext from "../../store/auth-context";
+import { authActions } from "../../store/auth";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const Header = (props) => {
-  const authCtx = useContext(AuthContext);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const dispatch = useDispatch();
   const history = useHistory();
+
   const logoutHandler = () => {
-    authCtx.logout();
+    dispatch(authActions.logout());
     history.replace("/login");
   };
   return (
@@ -16,7 +20,7 @@ const Header = (props) => {
         <NavLink to="/" exact activeClassName={classes.active}>
           Home
         </NavLink>
-        {!authCtx.isLoggedIn && (
+        {!isLoggedIn && (
           <>
             <NavLink to="/signup" activeClassName={classes.active}>
               Sign Up
@@ -26,13 +30,13 @@ const Header = (props) => {
             </NavLink>
           </>
         )}
-        {authCtx.isLoggedIn && (
+        {isLoggedIn && (
           <>
             <NavLink to="/profile" activeClassName={classes.active}>
-              profile
+              Profile
             </NavLink>
             <NavLink to="/expense" activeClassName={classes.active}>
-              expense
+              Expense
             </NavLink>
             <button onClick={logoutHandler}>LogOut</button>
           </>
