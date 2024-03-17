@@ -4,6 +4,8 @@ import ExpenseItem from "./ExpenseItem";
 import { useSelector } from "react-redux";
 import { expensesActions } from "../../store/expenses";
 import { useDispatch } from "react-redux";
+import { themeActions } from "../../store/theme";
+import { CSVLink } from "react-csv";
 
 const Expense = (props) => {
   const moneySpentInputRef = useRef(null);
@@ -32,7 +34,7 @@ const Expense = (props) => {
     } catch (error) {
       alert(error.message);
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     fetchExpenses();
@@ -114,7 +116,7 @@ const Expense = (props) => {
   };
   const submitHandler = (e) => {
     e.preventDefault();
-    const moneySpent = moneySpentInputRef.current.value;
+    const moneySpent = +moneySpentInputRef.current.value;
     const description = descriptionInputRef.current.value;
     const category = categoryInputRef.current.value;
     const expense = { moneySpent, description, category };
@@ -123,6 +125,21 @@ const Expense = (props) => {
       updateExpense(expense);
     }
   };
+
+  const totalMoneySpent = expenses.reduce(
+    (acc, expense) => acc + expense.moneySpent,
+    0
+  );
+
+  const toggleDarkMode = () => {
+    dispatch(themeActions.toggleTheme());
+  };
+
+  const headers = [
+    { label: "Category", key: "category" },
+    { label: "Money Spent", key: "moneySpent" },
+    { label: "Description", key: "description" },
+  ];
   return (
     <>
       <section className={classes.expense}>
@@ -176,6 +193,19 @@ const Expense = (props) => {
             );
           })}
         </ul>
+        <div>
+          <h3> TotalMoneySpent :{totalMoneySpent}</h3>
+          {totalMoneySpent > 10000 && (
+            <div className={classes.actions}>
+              <button onClick={toggleDarkMode}>Activate Premium</button>
+            </div>
+          )}
+        </div>
+        <div className={classes.actions}>
+          <CSVLink data={expenses} headers={headers} filename="expenses.csv">
+            Download CSV
+          </CSVLink>
+        </div>
       </section>
     </>
   );

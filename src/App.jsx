@@ -7,11 +7,12 @@ import Header from "./components/Layout/Header";
 import ForgetPasswordPage from "./pages/ForgetPasswordPage";
 import Expense from "./components/Expense/Expense";
 import { useSelector } from "react-redux";
-
+import classes from "./App.module.css";
 const App = () => {
+  const theme = useSelector((state) => state.theme.value);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   return (
-    <>
+    <div className={classes[theme]}>
       <Header />
       <main>
         <Switch>
@@ -44,7 +45,7 @@ const App = () => {
           </Route>
         </Switch>
       </main>
-    </>
+    </div>
   );
 };
 
