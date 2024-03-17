@@ -76,3 +76,11 @@
   color: rgb(157, 85, 27);
   text-align: center;
 }
+
+.csvDownload {
+  color: blueviolet;
+  text-decoration: none;
+  font-weight: bold;
+  border: 10px;
+  border-color: black;
+}

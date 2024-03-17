@@ -201,11 +201,14 @@ const Expense = (props) => {
             </div>
           )}
         </div>
-        <div className={classes.actions}>
-          <CSVLink data={expenses} headers={headers} filename="expenses.csv">
-            Download CSV
-          </CSVLink>
-        </div>
+        <CSVLink
+          data={expenses}
+          headers={headers}
+          filename="expenses.csv"
+          className={classes.csvDownload}
+        >
+          Download CSV
+        </CSVLink>
       </section>
     </>
   );
