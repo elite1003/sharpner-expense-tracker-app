@@ -165,7 +165,7 @@ const Expense = (props) => {
           </div>
           <div className={classes.control}>
             <label>Category</label>
-            <select value={props.selected} ref={categoryInputRef}>
+            <select ref={categoryInputRef}>
               <option value="FOOD">FOOD</option>
               <option value="PETROL">PETROL</option>
               <option value="SALARY">SALARY</option>
