@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import classes from "./Expense.module.css";
 import ExpenseItem from "./ExpenseItem";
 import { useSelector } from "react-redux";
@@ -12,38 +12,38 @@ const Expense = (props) => {
   const descriptionInputRef = useRef(null);
   const categoryInputRef = useRef(null);
   const expenses = useSelector((state) => state.expenses);
+  const email = useSelector((state) => state.auth.email);
   const [idEditSelected, setIdEditSeleceted] = useState(null);
   const dispatch = useDispatch();
 
-  const fetchExpenses = useCallback(async () => {
-    try {
-      const response = await fetch(
-        "https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/expenses.json"
-      );
-      if (!response.ok) {
-        throw new Error("failed to fetch expenses");
-      }
-      const data = await response.json();
-      let expenses = [];
-      for (const key in data) {
-        if (Object.hasOwnProperty.call(data, key)) {
-          expenses.push({ id: key, ...data[key] });
-        }
-      }
-      dispatch(expensesActions.updateExpenses(expenses));
-    } catch (error) {
-      alert(error.message);
-    }
-  }, [dispatch]);
-
   useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const response = await fetch(
+          `https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/${email}/expenses.json`
+        );
+        if (!response.ok) {
+          throw new Error("failed to fetch expenses");
+        }
+        const data = await response.json();
+        let expenses = [];
+        for (const key in data) {
+          if (Object.hasOwnProperty.call(data, key)) {
+            expenses.push({ id: key, ...data[key] });
+          }
+        }
+        dispatch(expensesActions.updateExpenses(expenses));
+      } catch (error) {
+        alert(error.message);
+      }
+    };
     fetchExpenses();
-  }, [fetchExpenses]);
+  }, [dispatch, email]);
 
   const saveExpense = async (expense) => {
     try {
       const response = await fetch(
-        "https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/expenses.json",
+        `https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/${email}/expenses.json`,
         {
           method: "POST",
           body: JSON.stringify(expense),
@@ -65,7 +65,7 @@ const Expense = (props) => {
   const expenseDeleteHandler = async (id) => {
     try {
       const response = await fetch(
-        `https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/expenses/${id}.json`,
+        `https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/${email}/expenses/${id}.json`,
         {
           method: "DELETE",
         }
@@ -83,7 +83,7 @@ const Expense = (props) => {
   const updateExpense = async (expense) => {
     try {
       const response = await fetch(
-        `https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/expenses/${idEditSelected}.json`,
+        `https://swapi-movie-app-default-rtdb.asia-southeast1.firebasedatabase.app/${email}/expenses/${idEditSelected}.json`,
         {
           method: "PUT",
           body: JSON.stringify(expense),

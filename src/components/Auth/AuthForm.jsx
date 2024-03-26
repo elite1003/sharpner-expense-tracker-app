@@ -15,7 +15,7 @@ const AuthForm = (props) => {
     e.preventDefault();
     const email = emailInputRef.current.value;
     const password = passwordInputRef.current.value;
-    const confirmPassword = confirmPasswordInputRef.value;
+    const confirmPassword = confirmPasswordInputRef.current.value;
     if (
       email.length > 0 &&
       password.length > 0 &&
@@ -41,7 +41,13 @@ const AuthForm = (props) => {
           throw new Error("Signup failed");
         }
         const data = await response.json();
-        dispatch(authActions.login(data.idToken));
+        dispatch(
+          authActions.login({
+            token: data.idToken,
+            email: email.replace(/[@.]/g, ""),
+          })
+        );
+        history.replace("/expense");
       } catch (error) {
         alert(error.message);
       }

@@ -29,8 +29,13 @@ const Login = (props) => {
       throw new Error("Login failed");
     }
     const data = await response.json();
-    dispatch(authActions.login(data.idToken));
-    history.replace("/profile");
+    dispatch(
+      authActions.login({
+        token: data.idToken,
+        email: email.replace(/[@.]/g, ""),
+      })
+    );
+    history.replace("/expense");
   };
 
   const submitHandler = async (e) => {
